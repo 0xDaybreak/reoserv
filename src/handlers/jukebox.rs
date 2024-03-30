@@ -1,3 +1,4 @@
+use eolib::protocol::net::client::JukeboxUseClientPacket;
 use eolib::{
     data::{EoReader, EoSerialize},
     protocol::net::{client::JukeboxMsgClientPacket, PacketAction},
@@ -21,6 +22,17 @@ fn msg(reader: EoReader, player_id: i32, map: MapHandle) {
     map.play_jukebox_track(player_id, msg.track_id + 1);
 }
 
+fn play(reader: EoReader, player_id: i32, map: MapHandle) {
+    let msg = match JukeboxUseClientPacket::deserialize(&reader) {
+        Ok(msg) => msg,
+        Err(e) => {
+            error!("Error deserializing JukeboxUseClientPacket {}", e);
+            return;
+        }
+    };
+    map.play_bard(player_id, msg.instrument_id, msg.note_id);
+}
+
 pub async fn jukebox(action: PacketAction, reader: EoReader, player: PlayerHandle) {
     let player_id = match player.get_player_id().await {
         Ok(player_id) => player_id,
@@ -41,6 +53,7 @@ pub async fn jukebox(action: PacketAction, reader: EoReader, player: PlayerHandl
     match action {
         PacketAction::Open => open(player_id, map),
         PacketAction::Msg => msg(reader, player_id, map),
+        PacketAction::Use => play(reader, player_id, map),
         _ => error!("Unhandled packet Jukebox_{:?}", action),
     }
 }

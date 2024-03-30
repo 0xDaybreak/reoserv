@@ -275,6 +275,11 @@ pub enum Command {
         player_id: i32,
         track_id: i32,
     },
+    PlayBard {
+        player_id: i32,
+        instrument: i32,
+        note: i32,
+    },
     RecoverNpcs,
     RecoverPlayers,
     Reload {

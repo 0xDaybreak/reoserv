@@ -451,6 +451,14 @@ impl MapHandle {
         });
     }
 
+    pub fn play_bard(&self, player_id: i32, instrument: i32, note: i32) {
+        let _ = self.tx.send(Command::PlayBard {
+            player_id,
+            instrument,
+            note,
+        });
+    }
+
     pub fn recover_npcs(&self) {
         let _ = self.tx.send(Command::RecoverNpcs);
     }
